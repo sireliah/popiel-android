@@ -1,0 +1,6 @@
+Cython==0.25.2
+KivEnt-Core==2.2.0.dev0
+Kivy==1.9.1
+Kivy-Garden==0.1.4
+pygame==1.9.3.dev0
+requests==2.12.4

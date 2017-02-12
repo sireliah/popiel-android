@@ -1,0 +1,53 @@
+#:kivy 1.9.1
+
+PopielGame:
+
+<PopielGame>:
+    gameworld: gameworld
+    GameWorld:
+        id: gameworld
+        gamescreenmanager: gamescreenmanager
+        size_of_gameworld: 100*1024
+        size_of_entity_block: 128
+        system_count: 8
+        zones: {'general': 10000, 'touch': 100}
+        PositionSystem2D:
+            system_id: 'position'
+            gameworld: gameworld
+            zones: ['general', 'touch']
+            size_of_component_block: 128
+        Renderer:
+            gameworld: gameworld
+            system_id: 'renderer'
+            frame_count: 1
+            zones: ['general']
+            updateable: True
+            size_of_batches: 512
+            size_of_component_block: 128
+            shader_source: 'data/assets/shaders/positionshaders.glsl'
+        GameView:
+            system_id: 'camera1'
+            gameworld: gameworld
+            size: root.size
+            pos: root.pos
+            updateable: True
+        VelocitySystem2D:
+            system_id: 'velocity'
+            gameworld: gameworld
+            updateable: True
+            
+    GameScreenManager:
+        id: gamescreenmanager
+        size: root.size
+        pos: root.pos
+        gameworld: gameworld
+        GameScreen:
+            name: 'main'
+            
+<GameScreenManager>:
+    MainScreen:
+        id: main_screen
+        
+<MainScreen@GameScreen>:
+    name: 'main'
+
