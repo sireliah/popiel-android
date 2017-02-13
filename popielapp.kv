@@ -31,10 +31,12 @@ PopielGame:
             size: root.size
             pos: root.pos
             updateable: True
-        VelocitySystem2D:
-            system_id: 'velocity'
+        ParallaxSystem:
+            system_id: 'parallax'
             gameworld: gameworld
             updateable: True
+            x_scope: root.x_scope
+            y_scope: root.y_scope
             
     GameScreenManager:
         id: gamescreenmanager
@@ -50,4 +52,17 @@ PopielGame:
         
 <MainScreen@GameScreen>:
     name: 'main'
+    FloatLayout:
+        DebugPanel:
+            size_hint: (.2, .1)
+            pos_hint: {'x': .225, 'y': .025}
 
+<DebugPanel>:
+    Label:
+        pos: root.pos
+        size: root.size
+        font_size: root.size[1]*.5
+        halign: 'center'
+        valign: 'middle'
+        color: (1,1,1,1)
+        text: 'FPS: ' + root.fps if root.fps != None else 'FPS:'

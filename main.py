@@ -2,17 +2,17 @@
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.factory import Factory
-from kivy.properties import ObjectProperty
+from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.widget import Widget
 from kivy.core.window import Window
 
 import kivent_core
 from kivent_core.managers.resource_managers import texture_manager
 
-from game_system import VelocitySystem2D
+from game_system import ParallaxSystem
 
 
-Factory.register('VelocitySystem2D', cls=VelocitySystem2D)
+Factory.register('ParallaxSystem', cls=ParallaxSystem)
 texture_manager.load_atlas('data/assets/game_objects.atlas')
 
 
@@ -20,14 +20,14 @@ class PopielGame(Widget):
 
     level_width = 1000
     level_height = 600
-
-    x_scope = 0
-    y_scope = 0
+    x_scope = NumericProperty(0)
+    y_scope = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.gameworld.init_gameworld(
-            ['renderer', 'position', 'velocity', 'camera1'], callback=self.init_game)
+            ['renderer', 'position', 'parallax', 'camera1'],
+            callback=self.init_game)
 
     def init_game(self):
         self.setup_states()
@@ -38,10 +38,10 @@ class PopielGame(Widget):
     def setup_states(self):
         self.gameworld.add_state(
             state_name='main',
-            systems_added=['renderer',],
+            systems_added=['renderer', ],
             systems_removed=[],
             systems_paused=[],
-            systems_unpaused=['renderer', 'velocity', ],
+            systems_unpaused=['renderer', 'parallax', ],
             screenmanager_screen='main'
         )
 
@@ -52,32 +52,53 @@ class PopielGame(Widget):
         model_manager = self.gameworld.model_manager
         model_manager.load_textured_rectangle(
             'vertex_format_4f', 200.0, 100.0, 'grass', 'grass4')
+        model_manager.load_textured_rectangle(
+            'vertex_format_4f', 400.0, 100.0, 'mountains', 'mountains4')
 
-    def on_touch_move(self, touch):
+    def on_touch_down(self, touch):
         (x, y) = touch.pos
         if x > 500:
             print('prawo')
-            self.x_scope += 10
+            self.x_scope += 1
         elif x < 500:
             print('lewo')
-            self.x_scope -= 10
-        self.draw_models()
+            self.x_scope -= 1
 
     def draw_models(self):
-        game_view = self.gameworld.system_manager['camera1']
-        x, y = int(-game_view.camera_pos[0]), int(-game_view.camera_pos[1])
-        w, h = int(game_view.size[0] + x), int(game_view.size[1] + y)
         init_entity = self.gameworld.init_entity
-        for pos in range(0, self.level_width, 200):
+        for pos in range(0, self.level_width, 400):
             element = {
-                'position': (pos+self.x_scope, 100),
+                'position': (pos, 185),
+                'parallax': {'layer': 1.0},
+                'renderer': {'texture': 'mountains', 'model_key': 'mountains4'},
+            }
+
+            init_entity(element, ['position', 'renderer', 'parallax'])
+
+        for pos in range(0, self.level_width*2, 200):
+            element = {
+                'position': (pos, 100),
+                'parallax': {'layer': 4.0},
                 'renderer': {'texture': 'grass', 'model_key': 'grass4'},
             }
 
-            init_entity(element, ['position', 'renderer'])
+            init_entity(element, ['position', 'renderer', 'parallax'])
 
     def update(self, dt):
         self.gameworld.update(dt)
+
+
+class DebugPanel(Widget):
+
+    fps = StringProperty(None)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Clock.schedule_once(self.update_fps)
+
+    def update_fps(self, dt):
+        self.fps = "%s" % int(Clock.get_fps())
+        Clock.schedule_once(self.update_fps, 0.05)
 
 
 class PopielApp(App):
@@ -88,4 +109,3 @@ class PopielApp(App):
 
 if __name__ == '__main__':
     PopielApp().run()
-

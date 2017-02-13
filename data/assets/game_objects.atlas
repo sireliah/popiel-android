@@ -1,5 +1,6 @@
 {
     "game_objects.png": {
-        "grass": [0, 0, 364, 184]
+        "grass": [0, 0, 450, 200],
+        "mountains": [451, 0, 745, 200]
     }
 }
