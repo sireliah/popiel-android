@@ -37,7 +37,12 @@ PopielGame:
             updateable: True
             x_scope: root.x_scope
             y_scope: root.y_scope
-            
+        PhysicsSystem:
+            system_id: 'physics'
+            gameworld: gameworld
+            updateable: True
+            character_jump: root.character_jump
+
     GameScreenManager:
         id: gamescreenmanager
         size: root.size
