@@ -20,7 +20,7 @@ uniform vec4       color;
 uniform float      opacity;
 
 void main (void) {
-  frag_color = color * vec4(1.0, 1., 1.0, opacity);
+  frag_color = color * vec4(1.0, 1.0, 1.0, opacity);
   tex_coord0 = uvs;
   vec4 new_pos = vec4(pos.xy, 0.0, 1.0);
   gl_Position = projection_mat * modelview_mat * new_pos;
