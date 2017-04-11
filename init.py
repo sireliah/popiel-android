@@ -10,7 +10,7 @@ class InitMixin(object):
 
     @staticmethod
     def init_model_serial(texture, width, height, y, layer, init_entity_callback, walkable=False, y_callback=None):
-        for x in range(0, LEVEL_WIDTH * int(layer), width):
+        for x in range(0, LEVEL_WIDTH * (int(layer) + 1), width):
             if y_callback:
                 y = y_callback(x)
 
@@ -26,7 +26,7 @@ class InitMixin(object):
             init_entity_callback(element, ['position', 'renderer', 'parallax', 'physics'])
 
     @staticmethod
-    def init_model(texture, x, y, width, height, layer, init_entity_callback, physics_active=False):
+    def init_model(texture, x, y, width, height, layer, init_entity_callback, physics_active=False, walkable=False):
 
         element = {
             'position': (x, y),
@@ -34,7 +34,7 @@ class InitMixin(object):
             'renderer': {'texture': texture, 'model_key': '%s-4' % texture},
             'physics': {
                 'x': x, 'y': y, 'width': width, 'height': height,
-                'active': physics_active, 'walkable': False
+                'active': physics_active, 'walkable': walkable
             },
         }
         return init_entity_callback(element, ['position', 'renderer', 'parallax', 'physics'])

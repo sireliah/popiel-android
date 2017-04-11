@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
+from functools import partial
 import math
+from random import randint
 
 from kivy.app import App
 from kivy.clock import Clock
@@ -13,8 +15,8 @@ from kivy.core.window import Window
 from kivent_core.managers.resource_managers import texture_manager
 
 from init import InitMixin
-from game_systems import ParallaxSystem, PhysicsSystem
-from settings import LEVEL_WIDTH, LEVEL_HEIGHT
+from game_systems import PhysicsSystem, ParallaxSystem
+from settings import LEVEL_WIDTH, LEVEL_HEIGHT, MOUSE_LIFESPAN
 
 
 Factory.register('ParallaxSystem', cls=ParallaxSystem)
@@ -25,18 +27,22 @@ texture_manager.load_atlas('data/assets/character_objects.atlas')
 
 class PopielGame(Widget, InitMixin):
 
+    # Scopes determine how whole level is moving together.
     x_scope = NumericProperty(0)
     y_scope = NumericProperty(0)
     character_x = NumericProperty(0)
     character_jump = BooleanProperty(False)
-    character_entity_id = NumericProperty(None)  # TODO
+    character_entity_id = NumericProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.gameworld.init_gameworld(
-            ['renderer', 'position', 'parallax', 'physics', 'camera1'],
+            ['renderer', 'position', 'physics', 'camera1'],
             callback=self.init_game)
+
         Clock.schedule_interval(self.clock_callback, 0.5)
+        Clock.schedule_interval(self.generate_mice, 3.0)
+        Clock.schedule_interval(self.generate_mice, 4.4)
 
     def init_game(self):
         self.setup_states()
@@ -67,6 +73,7 @@ class PopielGame(Widget, InitMixin):
             'mountains': (400.0, 100.0),
             'character1.1': (100.0, 200.0),
             'character1.2': (100.0, 200.0),
+            'mouse1': (200.0, 50.0),
         }
 
         for model, size in textures.items():
@@ -74,29 +81,40 @@ class PopielGame(Widget, InitMixin):
                 'vertex_format_4f', size[0], size[1], model, '%s-4' % model
             )
 
-    def on_touch_down(self, touch):
-        (x, y) = touch.pos
-        if x > self.size[0] / 2:
-            self.x_scope -= 0.5
-            self.character_x -= 0.1
-        elif x < self.size[0] / 2:
+    def move(self, direction):
+        if direction == 'left':
             self.x_scope += 0.5
+        elif direction == 'right':
+            self.x_scope -= 0.5
 
-        if touch.is_double_tap:
-            self.character_jump = True
+    def jump(self):
+        self.character_jump = True
 
     def init_models(self):
         init_entity = self.gameworld.init_entity
-
-        self.init_model_serial('mountains', 400, 200, 185, 1.0, init_entity)
+        self.init_model_serial('mountains', 400, 200, 220, 1.05, init_entity)
+        self.init_model_serial('mountains', 400, 200, 200, 1.1, init_entity)
         self.init_model('tree1', 1500, 500, 300, 400, 3.0, init_entity)
-        self.character_entity_id = self.init_model('character1.1', 500, 200, 100, 100, 4.0, init_entity, physics_active=True)
+        self.init_model('mouse1', 2000, 400, 200, 50, 4.0, init_entity, physics_active=True)
 
+        self.character_entity_id = self.init_model('character1.1', 700, 100, 100, 100, 4.0, init_entity, physics_active=True)
+
+        self.gameworld.entity_to_focus = self.character_entity_id
         self.init_model_serial('ground', 200, 100, 200, 4.0, init_entity, y_callback=lambda x: math.degrees(math.sin(x / 4)) + 50)
         self.init_model_serial('grass', 100, 100, 100, 4.0, init_entity, walkable=True, y_callback=lambda x: math.degrees(math.sin(x / 4)) + 150)
+        self.init_model('grass', 200, 400, 200, 50, 4.0, init_entity, physics_active=True, walkable=True)
 
-        self.init_model('tree1', 700, 400, 700, 900, 7.0, init_entity)
+        self.init_model('grass', 700, 400, 200, 50, 4.0, init_entity, physics_active=True, walkable=True)
+
+
+        self.init_model('tree1', 700, 500, 700, 900, 7.0, init_entity)
         self.init_model('tree1', 2000, 400, 700, 900, 7.0, init_entity)
+
+    def generate_mice(self, dt):
+        entity_id = self.init_model('mouse1', randint(1000, 2000), 400, 200, 50, 4.0, self.gameworld.init_entity, physics_active=True)
+
+        # Count down the time to remove mouse entity.
+        Clock.schedule_once(partial(self.gameworld.timed_remove_entity, entity_id), MOUSE_LIFESPAN)
 
     def update(self, dt):
         self.gameworld.update(dt)
@@ -108,19 +126,7 @@ class PopielGame(Widget, InitMixin):
             self.x_scope += 0.2
         elif self.x_scope < 1.0 and self.x_scope > -1.0:
             self.x_scope = 0
-
-
-class DebugPanel(Widget):
-
-    fps = StringProperty(None)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        Clock.schedule_once(self.update_fps)
-
-    def update_fps(self, dt):
-        self.fps = '%s' % int(Clock.get_fps())
-        Clock.schedule_once(self.update_fps, 0.05)
+        self.character_jump = False
 
 
 class PopielApp(App):

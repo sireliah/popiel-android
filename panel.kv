@@ -1,0 +1,37 @@
+#:kivy 1.9.1
+
+<ControlPanel>:
+    FloatLayout:
+        size_hint: (0.2, 0.3)
+        Button:
+            pos_hint: {'x': 0.1, 'y': 0.1}
+            text: 'jump'
+            size: (200, 200)
+            background_down: 'data/assets/button_pressed.png'
+            background_normal: 'data/assets/button_normal.png'
+            on_press: app.root.jump()
+        Button:
+            pos: (root.size[0], root.size[1])
+            pos_hint: {'x': 7.0, 'y': 0.1}
+            text: 'left'
+            size: (200, 200)
+            background_down: 'data/assets/button_pressed.png'
+            background_normal: 'data/assets/button_normal.png'
+            on_press: app.root.move('left')
+        Button:
+            pos_hint: {'x': 8.0, 'y': 0.1}
+            text: 'right'
+            size: (200, 200)
+            background_down: 'data/assets/button_pressed.png'
+            background_normal: 'data/assets/button_normal.png'
+            on_press: app.root.move('right')
+
+<DebugPanel>:
+    Label:
+        pos: root.pos
+        size: root.size
+        font_size: root.size[1] * 0.5
+        halign: 'center'
+        valign: 'bottom'
+        color: (1, 1, 1, 1)
+        text: 'FPS: ' + root.fps if root.fps != None else 'FPS:'
