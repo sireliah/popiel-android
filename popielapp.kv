@@ -13,22 +13,23 @@ PopielGame:
         gamescreenmanager: gamescreenmanager
         size_of_gameworld: 100 * 1024
         size_of_entity_block: 128
-        system_count: 8
+        system_count: 4
         zones: {'general': 10000, 'touch': 100}
         PositionSystem2D:
             system_id: 'position'
             gameworld: gameworld
             zones: ['general', 'touch']
             size_of_component_block: 128
-        Renderer:
+        ParallaxRenderer:
             gameworld: gameworld
-            system_id: 'renderer'
+            system_id: 'parallax_renderer'
             frame_count: 1
             zones: ['general']
             updateable: True
             size_of_batches: 512
             size_of_component_block: 128
             shader_source: 'data/assets/shaders/positionshaders.glsl'
+            gameview: 'camera1'
         GameView:
             system_id: 'camera1'
             gameworld: gameworld
@@ -39,11 +40,13 @@ PopielGame:
         ParallaxSystem:
             system_id: 'parallax'
             gameworld: gameworld
+            zones: ['general']
             updateable: True
-            x_scope: root.x_scope
-            y_scope: root.y_scope
-            character_x: root.character_x
-            character_entity_id: root.character_entity_id
+        #    x_scope: root.x_scope
+        #    y_scope: root.y_scope
+        #    character_x: root.character_x
+        #    character_entity_id: root.character_entity_id
+
         PhysicsSystem:
             system_id: 'physics'
             gameworld: gameworld
@@ -53,10 +56,11 @@ PopielGame:
             x_scope: root.x_scope
             y_scope: root.y_scope
             character_x: root.character_x
-
+            character_y: root.character_y
     GameScreenManager:
         id: gamescreenmanager
         size: root.size
+        mice_num: root.mice_num
         pos: root.pos
         gameworld: gameworld
         GameScreen:

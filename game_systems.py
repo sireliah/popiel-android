@@ -3,42 +3,37 @@ from kivent_core.systems.gamesystem import GameSystem
 
 from settings import GRAVITY, JUMP_HEIGHT
 
+from mouse import Mouse
+
 
 class ParallaxSystem(GameSystem):
 
     """
     Drawing parallax effect.
     """
-
     def update(self, dt):
         entities = self.gameworld.entities
-        character_x = 0
+        gameview = self.gameworld.system_manager['camera1']
         for component in self.components:
             if component is not None:
                 entity_id = component.entity_id
                 entity = entities[entity_id]
 
-                if entity.entity_id == self.character_entity_id:
-                    character_x = entity.position.x
-
-                if character_x >= 900 and character_x <= 1600:
-
-                    pos_component = entity.position
-                    pos_component.x += self.x_scope * component.layer
-                    pos_component.y += self.y_scope * component.layer
+                entity.position.shift = (gameview.camera_pos[0] + 0.001) * entity.parallax.shift
 
 
-class PhysicsSystem(GameSystem):
+class PhysicsSystem(GameSystem, Mouse):
 
     """
     Handle collisions and gravity.
     """
 
     def character_motion(self, entity1):
-        render_comp = entity1.renderer
+        render_comp = entity1.parallax_renderer
 
         entity1.position.x -= self.x_scope / 10.0
         self.character_x = entity1.position.x
+        self.character_y = entity1.position.y
 
         if self.x_scope <= 0:
             render_comp.texture_key = 'character1.1'
@@ -49,6 +44,10 @@ class PhysicsSystem(GameSystem):
             entity1.position.y = entity1.position.y + JUMP_HEIGHT
             self.character_jump = False
 
+        gameview = self.gameworld.system_manager['camera1']
+
+        gameview.camera_pos[0] = (-entity1.position.x + 1000) / 5
+
     def update_position(self, entity1, entity2):
 
         if entity1.physics.active and entity2.physics.walkable:
@@ -56,8 +55,8 @@ class PhysicsSystem(GameSystem):
             if entity1.entity_id == self.character_entity_id:
                 self.character_motion(entity1)
 
-            if 'mouse' in entity1.renderer.texture_key:
-                entity1.position.x -= 0.1
+            if 'mouse' in entity1.parallax_renderer.texture_key:
+                self.mouse_move(entity1)
 
             # Gravity
             entity1.position.y -= GRAVITY
@@ -71,7 +70,7 @@ class PhysicsSystem(GameSystem):
                 if entity1.position.y <= entity2.position.y + 100.0:
 
                     # Collision
-                    if entity1.position.y <= entity2.position.y:
+                    if entity1.position.y < entity2.position.y:
                         entity1.position.x = ent2_right_margin
 
                     # On the top of the object
@@ -84,7 +83,9 @@ class PhysicsSystem(GameSystem):
 
         # TODO: optimize that.
         for component in [c for c in components if c and c.active]:
+
             entity1 = entities[component.entity_id]
+
             nearby_components = [
                 c for c in components if c and c.walkable
                 # and component.x >= c.x - c.width # and component.x <= c.x + c.width

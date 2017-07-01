@@ -15,37 +15,36 @@ class InitMixin(object):
                 y = y_callback(x)
 
             element = {
-                'position': (x, y),
-                'parallax': {'layer': layer},
-                'renderer': {'texture': texture, 'model_key': '%s-4' % texture},
+                'position': (x, y, layer),
+                'parallax': {'shift': layer},
+                'parallax_renderer': {'texture': texture, 'model_key': '%s-4' % texture},
                 'physics': {
                     'x': x, 'y': y, 'width': width, 'height': height,
                     'active': False, 'walkable': walkable
                 },
             }
-            init_entity_callback(element, ['position', 'renderer', 'parallax', 'physics'])
+            init_entity_callback(element, ['position', 'parallax_renderer', 'physics', 'parallax'])
 
     @staticmethod
     def init_model(texture, x, y, width, height, layer, init_entity_callback, physics_active=False, walkable=False):
 
         element = {
-            'position': (x, y),
-            'parallax': {'layer': layer},
-            'renderer': {'texture': texture, 'model_key': '%s-4' % texture},
+            'position': (x, y, layer),
+            'parallax': {'shift': layer},
+            'parallax_renderer': {'texture': texture, 'model_key': '%s-4' % texture},
             'physics': {
                 'x': x, 'y': y, 'width': width, 'height': height,
                 'active': physics_active, 'walkable': walkable
             },
         }
-        return init_entity_callback(element, ['position', 'renderer', 'parallax', 'physics'])
+        return init_entity_callback(element, ['position', 'parallax_renderer', 'physics', 'parallax'])
 
-    # TODO
     @staticmethod
     def init_character(texture, x, y, layer, init_entity_callback):
         element = {
-            'position': (x, y),
-            'parallax': {'layer': layer},
-            'renderer': {'texture': texture, 'model_key': '%s-4' % texture},
+            'position': (x, y, layer),
+            'parallax': {'shift': layer},
+            'parallax_renderer': {'texture': texture, 'model_key': '%s-4' % texture},
             'physics': {'x': x, 'y': y, 'width': 100.0, 'height': 200.0, 'active': True},
         }
-        return init_entity_callback(element, ['position', 'renderer', 'physics'])
+        return init_entity_callback(element, ['position', 'parallax_renderer', 'physics', 'parallax'])
