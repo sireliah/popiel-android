@@ -1,0 +1,16 @@
+from kivent_core.systems.staticmemgamesystem cimport StaticMemGameSystem, MemComponent
+
+
+ctypedef struct PositionStruct2D:
+    unsigned int entity_id
+    float x
+    float y
+    float shift
+
+
+cdef class PositionComponent2D(MemComponent):
+    pass
+
+
+cdef class PositionShiftSystem2D(StaticMemGameSystem):
+    pass

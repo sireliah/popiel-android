@@ -6,7 +6,7 @@ from settings import GRAVITY, JUMP_HEIGHT
 from mouse import Mouse
 
 
-class ParallaxSystem(GameSystem):
+class ParallaxShiftSystem(GameSystem):
 
     """
     Drawing parallax effect.

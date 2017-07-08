@@ -15,7 +15,7 @@ PopielGame:
         size_of_entity_block: 128
         system_count: 4
         zones: {'general': 10000, 'touch': 100}
-        PositionSystem2D:
+        PositionShiftSystem2D:
             system_id: 'position'
             gameworld: gameworld
             zones: ['general', 'touch']
@@ -37,7 +37,7 @@ PopielGame:
             pos: root.pos
             updateable: True
             window_size: root.size
-        ParallaxSystem:
+        ParallaxShiftSystem:
             system_id: 'parallax'
             gameworld: gameworld
             zones: ['general']

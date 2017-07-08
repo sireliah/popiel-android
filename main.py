@@ -14,12 +14,15 @@ from kivy.core.window import Window
 # import kivent_core
 from kivent_core.managers.resource_managers import texture_manager
 
+from parallax_module.parallax import ParallaxSystem2D, ParallaxRenderer
+from parallax_module.position import PositionShiftSystem2D
+
 from init import InitMixin
-from game_systems import PhysicsSystem, ParallaxSystem
+from game_systems import PhysicsSystem, ParallaxShiftSystem
 from settings import LEVEL_WIDTH, LEVEL_HEIGHT, MOUSE_LIFESPAN, MAX_MICE_NUM, DEBUG
 
 
-Factory.register('ParallaxSystem', cls=ParallaxSystem)
+Factory.register('ParallaxShiftSystem', cls=ParallaxShiftSystem)
 Factory.register('PhysicsSystem', cls=PhysicsSystem)
 texture_manager.load_atlas('data/assets/game_objects.atlas')
 texture_manager.load_atlas('data/assets/character_objects.atlas')
