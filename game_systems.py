@@ -6,6 +6,21 @@ from settings import GRAVITY, JUMP_HEIGHT
 from mouse import Mouse
 
 
+def collide_or_top(side, entity1, entity2, ent2_left_margin, ent2_right_margin):
+
+    assert side in ('left', 'right')
+
+    if entity1.position.y <= entity2.position.y + 100.0:
+
+        # Collision
+        if entity1.position.y < entity2.position.y + 50.0:
+            entity1.position.x = ent2_left_margin if side == 'left' else ent2_right_margin + 20.0
+
+        # On the top of the object
+        else:
+            entity1.position.y = entity2.position.y + 100.0
+
+
 class ParallaxShiftSystem(GameSystem):
 
     """
@@ -65,17 +80,11 @@ class PhysicsSystem(GameSystem, Mouse):
             ent2_left_margin = entity2.position.x - entity2.physics.width / 2.0
             ent2_right_margin = entity2.position.x + entity2.physics.width / 2.0
 
+            # Stops the character on left or right side.
             if (entity1.position.x >= ent2_left_margin and entity1.position.x <= ent2_right_margin):
-
-                if entity1.position.y <= entity2.position.y + 100.0:
-
-                    # Collision
-                    if entity1.position.y < entity2.position.y:
-                        entity1.position.x = ent2_right_margin
-
-                    # On the top of the object
-                    else:
-                        entity1.position.y = entity2.position.y + 100.0
+                collide_or_top('left', entity1, entity2, ent2_left_margin, ent2_right_margin)
+            elif (entity1.position.x >= ent2_right_margin and entity1.position.x <= ent2_right_margin + 20.0):
+                collide_or_top('right', entity1, entity2, ent2_left_margin, ent2_right_margin)
 
     def update(self, dt):
         entities = self.gameworld.entities

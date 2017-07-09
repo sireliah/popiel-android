@@ -1,4 +1,5 @@
 
+import copy
 from settings import LEVEL_WIDTH, LEVEL_HEIGHT
 
 
@@ -20,7 +21,7 @@ class InitMixin(object):
                 'parallax_renderer': {'texture': texture, 'model_key': '%s-4' % texture},
                 'physics': {
                     'x': x, 'y': y, 'width': width, 'height': height,
-                    'active': False, 'walkable': walkable
+                    'active': False, 'walkable': walkable,
                 },
             }
             init_entity_callback(element, ['position', 'parallax_renderer', 'physics', 'parallax'])
@@ -34,7 +35,21 @@ class InitMixin(object):
             'parallax_renderer': {'texture': texture, 'model_key': '%s-4' % texture},
             'physics': {
                 'x': x, 'y': y, 'width': width, 'height': height,
-                'active': physics_active, 'walkable': walkable
+                'active': physics_active, 'walkable': walkable,
+            },
+        }
+        return init_entity_callback(element, ['position', 'parallax_renderer', 'physics', 'parallax'])
+
+    @staticmethod
+    def init_model_mouse(texture, x, y, width, height, layer, best_instructions, init_entity_callback):
+
+        element = {
+            'position': (x, y, layer),
+            'parallax': {'shift': layer},
+            'parallax_renderer': {'texture': texture, 'model_key': '%s-4' % texture},
+            'physics': {
+                'x': x, 'y': y, 'width': width, 'height': height,
+                'active': True, 'walkable': False, 'instructions': [], 'best_instructions': copy.copy(list(reversed(best_instructions)))
             },
         }
         return init_entity_callback(element, ['position', 'parallax_renderer', 'physics', 'parallax'])

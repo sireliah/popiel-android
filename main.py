@@ -2,12 +2,12 @@
 
 from functools import partial
 import math
-from random import randint
+from random import randint, uniform
 
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.factory import Factory
-from kivy.properties import StringProperty, NumericProperty, BooleanProperty
+from kivy.properties import StringProperty, NumericProperty, BooleanProperty, DictProperty
 from kivy.uix.widget import Widget
 from kivy.core.window import Window
 
@@ -37,6 +37,7 @@ class PopielGame(Widget, InitMixin):
     character_jump = BooleanProperty(False)
     character_entity_id = NumericProperty(None)
     mice_num = NumericProperty(0)
+    best_result = DictProperty({'result': 0, 'instructions': []})
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -125,30 +126,45 @@ class PopielGame(Widget, InitMixin):
         self.init_model_serial('mountains', 400, 200, 200, 0.04, init_entity)
         self.init_model('tree1', 1500, 500, 300, 400, 0.8, init_entity)
 
-        self.character_entity_id = self.init_model('character1.1', 700, 100, 100, 100,
-                                                   self.ground_level, init_entity, physics_active=True)
-
         self.gameworld.entity_to_focus = self.character_entity_id
         self.init_model_serial('ground', 200, 100, 200, self.ground_level,
                                init_entity, y_callback=lambda x: math.degrees(math.sin(x / 4)) + 50)
         self.init_model_serial('grass', 100, 100, 100, self.ground_level,
                                init_entity, walkable=True, y_callback=lambda x: math.degrees(math.sin(x / 4)) + 150)
-        self.init_model('grass', 200, 400, 200, 50, self.ground_level,
+
+        self.init_model('grass', 1000, 500, 200, 50, self.ground_level,
                         init_entity, physics_active=True, walkable=True)
-        self.init_model('grass', 700, 400, 200, 50, self.ground_level,
+        self.init_model('grass', 1400, 500, 200, 50, self.ground_level,
                         init_entity, physics_active=True, walkable=True)
+
+        self.init_model('grass', 600, 500, 200, 50, self.ground_level,
+                        init_entity, physics_active=True, walkable=True)
+
+        self.character_entity_id = self.init_model('character1.1', 400, 300, 100, 100,
+                                                   self.ground_level, init_entity, physics_active=True)
 
         self.init_model('tree1', 700, 500, 700, 900, 6.0, init_entity)
         self.init_model('tree1', 2000, 400, 700, 900, 7.0, init_entity)
 
     def generate_mice(self, dt):
         if self.mice_num < MAX_MICE_NUM:
-            entity_id = self.init_model('mouse1_l', 1000, 400, 200, 50, self.ground_level,
-                                        self.gameworld.init_entity, physics_active=True)
 
+            best_result = self.best_result['result']
+            number = randint(0, 10)
+            if number == 10:
+                best_instructions = []
+                print("Random strategy!")
+            else:
+                best_instructions = self.best_result['instructions']
+                print("Picking this one:", self.best_result['result'])
+            entity_id = self.init_model_mouse('mouse1_l', 1900, 400, 200, 50, self.ground_level,
+                                        best_instructions,
+                                        self.gameworld.init_entity)
             # Count down the time to remove mouse entity.
             Clock.schedule_once(partial(self.remove_mouse, entity_id), MOUSE_LIFESPAN)
+
             self.mice_num += 1
+            print("----------------", self.mice_num)
 
     def remove_mouse(self, entity_id, dt):
         self.mice_num -= 1
