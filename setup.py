@@ -21,16 +21,16 @@ do_clear_existing = True
 
 
 parallax_modules = {
-    'parallax_module.parallax': ['parallax_module/parallax.pyx',],
-    'parallax_module.position': ['parallax_module/position.pyx',],
+    'parallax_module.parallax': ['modules/parallax/parallax.pyx',],
+    'parallax_module.position': ['modules/parallax/position.pyx',],
     }
 
 parallax_modules_c = {
-    'parallax_module.parallax': ['parallax_module/parallax.c',],
-    'parallax_module.position': ['parallax_module/position.c',],
+    'parallax_module.parallax': ['modules/parallax/parallax.c',],
+    'parallax_module.position': ['modules/parallax/position.c',],
     }
 
-check_for_removal = ['parallax_module/parallax.c', 'parallax_module/position.c']
+check_for_removal = ['modules/parallax/parallax.c', 'modules/parallax/position.c']
 
 def build_ext(ext_name, files, include_dirs=[]):
     return Extension(ext_name, files, include_dirs,
@@ -79,4 +79,4 @@ setup(
     packages=[
         'parallax_module',
         ],
-    package_dir={'parallax_module': 'parallax_module'})
+    package_dir={'parallax_module': 'modules/parallax'})
