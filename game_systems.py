@@ -14,7 +14,11 @@ def collide_or_top(side, entity1, entity2, ent2_left_margin, ent2_right_margin):
 
         # Collision
         if entity1.position.y < entity2.position.y + 50.0:
-            entity1.position.x = ent2_left_margin if side == 'left' else ent2_right_margin + 20.0
+
+            if side == 'left':
+                entity1.position.x = ent2_left_margin
+            elif side == 'right':
+                entity1.position.x = ent2_right_margin + 20.0
 
         # On the top of the object
         else:
@@ -30,11 +34,14 @@ class ParallaxShiftSystem(GameSystem):
         entities = self.gameworld.entities
         gameview = self.gameworld.system_manager['camera1']
         for component in self.components:
-            if component is not None:
+            if component:
                 entity_id = component.entity_id
                 entity = entities[entity_id]
 
-                entity.position.shift = (gameview.camera_pos[0] + 0.001) * entity.parallax.shift
+                try:
+                    entity.position.shift = (gameview.camera_pos[0] + 0.001) * entity.parallax.shift
+                except IndexError:
+                    pass
 
 
 class PhysicsSystem(GameSystem, Mouse):
@@ -60,7 +67,6 @@ class PhysicsSystem(GameSystem, Mouse):
             self.character_jump = False
 
         gameview = self.gameworld.system_manager['camera1']
-
         gameview.camera_pos[0] = (-entity1.position.x + 1000) / 5
 
     def update_position(self, entity1, entity2):
@@ -76,6 +82,10 @@ class PhysicsSystem(GameSystem, Mouse):
             # Gravity
             entity1.position.y -= GRAVITY
 
+            if entity1.position.y < 0 and entity1.entity_id != self.character_entity_id:
+                self.timed_remove_mouse(entity1.entity_id, lifespan=1)
+                return False
+
             # Whether entity is above a tile.
             ent2_left_margin = entity2.position.x - entity2.physics.width / 2.0
             ent2_right_margin = entity2.position.x + entity2.physics.width / 2.0
@@ -85,6 +95,7 @@ class PhysicsSystem(GameSystem, Mouse):
                 collide_or_top('left', entity1, entity2, ent2_left_margin, ent2_right_margin)
             elif (entity1.position.x >= ent2_right_margin and entity1.position.x <= ent2_right_margin + 20.0):
                 collide_or_top('right', entity1, entity2, ent2_left_margin, ent2_right_margin)
+            return True
 
     def update(self, dt):
         entities = self.gameworld.entities
@@ -96,11 +107,15 @@ class PhysicsSystem(GameSystem, Mouse):
             entity1 = entities[component.entity_id]
 
             nearby_components = [
-                c for c in components if c and c.walkable
+                c for c in components if c and c.walkable and not c.pawn
                 # and component.x >= c.x - c.width # and component.x <= c.x + c.width
             ]
             for component2 in nearby_components:
                 entity2 = entities[component2.entity_id]
 
-                if entity1 and entity2 and entity1 != entity2:
-                    self.update_position(entity1, entity2)
+                if entity1 and entity2 and entity1 != entity2 and not entity2.physics.pawn:
+                    try:
+                        if not self.update_position(entity1, entity2):
+                            continue
+                    except IndexError:
+                        pass

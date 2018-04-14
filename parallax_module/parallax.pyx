@@ -12,7 +12,7 @@ from kivent_core.rendering.vertex_formats import (
 from kivent_core.rendering.cmesh cimport CMesh
 from kivent_core.rendering.vertex_format cimport KEVertexFormat
 from kivent_core.rendering.batching cimport BatchManager, IndexedBatch
-from kivy.graphics.cgl cimport GLfloat, GLushort
+from kivy.graphics.cgl cimport GLushort
 
 # cython: embedsignature=True
 from kivent_core.systems.staticmemgamesystem cimport StaticMemGameSystem, MemComponent, ComponentPointerAggregator

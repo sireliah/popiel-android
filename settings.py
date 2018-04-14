@@ -1,4 +1,10 @@
 
+from kivy.config import Config
+Config.set('graphics', 'width', '1024')
+Config.set('graphics', 'width', '768')
+Config.set('graphics', 'fullscreen', '0')
+Config.write()
+
 DEBUG = True
 
 LEVEL_WIDTH = 1000

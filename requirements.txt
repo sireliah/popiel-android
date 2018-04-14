@@ -1,6 +1,12 @@
+certifi==2017.7.27.1
+chardet==3.0.4
 Cython==0.25.2
+docutils==0.14
+idna==2.6
 KivEnt-Core==2.2.0.dev0
-Kivy==1.9.1
+Kivy==1.10.0
 Kivy-Garden==0.1.4
-pygame==1.9.3.dev0
+pygame==1.9.3
+Pygments==2.2.0
 requests==2.12.4
+urllib3==1.22

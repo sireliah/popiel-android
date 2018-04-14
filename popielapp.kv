@@ -30,6 +30,11 @@ PopielGame:
             size_of_component_block: 128
             shader_source: 'data/assets/shaders/positionshaders.glsl'
             gameview: 'camera1'
+        ParallaxShiftSystem:
+            system_id: 'parallax'
+            gameworld: gameworld
+            zones: ['general']
+            updateable: True
         GameView:
             system_id: 'camera1'
             gameworld: gameworld
@@ -37,15 +42,6 @@ PopielGame:
             pos: root.pos
             updateable: True
             window_size: root.size
-        ParallaxShiftSystem:
-            system_id: 'parallax'
-            gameworld: gameworld
-            zones: ['general']
-            updateable: True
-        #    x_scope: root.x_scope
-        #    y_scope: root.y_scope
-        #    character_x: root.character_x
-        #    character_entity_id: root.character_entity_id
 
         PhysicsSystem:
             system_id: 'physics'
@@ -53,6 +49,8 @@ PopielGame:
             updateable: True
             character_entity_id: root.character_entity_id
             character_jump: root.character_jump
+            timed_remove_mouse: root.timed_remove_mouse
+            mice_num: root.mice_num
             x_scope: root.x_scope
             y_scope: root.y_scope
             character_x: root.character_x

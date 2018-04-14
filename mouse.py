@@ -1,6 +1,7 @@
-import copy
+from functools import partial
 from random import randint, uniform
 from settings import MOUSE_SIGHT
+from kivy.clock import Clock
 
 
 class Mouse(object):
@@ -49,7 +50,12 @@ class Mouse(object):
     def save_best_result(self, entity):
         result = 1 / entity.position.x * (len(entity.physics.instructions) + 1)
 
-        numer = randint(0, 1000)
-        if result > self.best_result['result'] and numer > 999:
-            self.best_result['result'] = result
-            self.best_result['instructions'] = copy.copy(entity.physics.instructions)
+        numer = randint(0, 10000)
+        if result > self.best_result['result'] and numer > 9999:
+
+            #Clock.schedule_once(partial(self.save, result, entity.physics.instructions), 1)
+            self.save(result, entity.physics.instructions)
+
+    def save(self, result, instructions):
+        self.best_result['result'] = result
+        self.best_result['instructions'] = instructions

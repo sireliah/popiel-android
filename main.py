@@ -11,7 +11,6 @@ from kivy.properties import StringProperty, NumericProperty, BooleanProperty, Di
 from kivy.uix.widget import Widget
 from kivy.core.window import Window
 
-# import kivent_core
 from kivent_core.managers.resource_managers import texture_manager
 
 from parallax_module.parallax import ParallaxSystem2D, ParallaxRenderer
@@ -81,7 +80,7 @@ class PopielGame(Widget, InitMixin):
             'ground': (200.0, 200.0),
             'grass': (100.0, 100.0),
             'tree1': (700.0, 900.0),
-            'mountains': (400.0, 100.0),
+            'mountains': (600.0, 200.0),
             'character1.1': (100.0, 200.0),
             'character1.2': (100.0, 200.0),
             'mouse1_l': (200.0, 50.0),
@@ -122,28 +121,30 @@ class PopielGame(Widget, InitMixin):
 
     def init_models(self):
         init_entity = self.gameworld.init_entity
-        self.init_model_serial('mountains', 400, 200, 220, 0.01, init_entity)
-        self.init_model_serial('mountains', 400, 200, 200, 0.04, init_entity)
+        self.init_model_m('mountains', 600, 300, 500, 300, 0.01, init_entity)
+        self.init_model_m('mountains', 600, 200, 500, 200, 0.06, init_entity)
         self.init_model('tree1', 1500, 500, 300, 400, 0.8, init_entity)
 
         self.gameworld.entity_to_focus = self.character_entity_id
-        self.init_model_serial('ground', 200, 100, 200, self.ground_level,
+        self.init_model_serial('ground', 200, 100, 0, 200, self.ground_level,
                                init_entity, y_callback=lambda x: math.degrees(math.sin(x / 4)) + 50)
-        self.init_model_serial('grass', 100, 100, 100, self.ground_level,
+        self.init_model_serial('grass', 100, 100, 0, 100, self.ground_level,
                                init_entity, walkable=True, y_callback=lambda x: math.degrees(math.sin(x / 4)) + 150)
 
         self.init_model('grass', 1000, 500, 200, 50, self.ground_level,
-                        init_entity, physics_active=True, walkable=True)
+                        init_entity, physics_active=True, walkable=True, pawn=False)
         self.init_model('grass', 1400, 500, 200, 50, self.ground_level,
-                        init_entity, physics_active=True, walkable=True)
+                        init_entity, physics_active=True, walkable=True, pawn=False)
 
-        self.init_model('grass', 600, 500, 200, 50, self.ground_level,
-                        init_entity, physics_active=True, walkable=True)
+        self.init_model('grass', 500, 2000, 200, 50, self.ground_level,
+                        init_entity, physics_active=True, walkable=True, pawn=False)
+        self.init_model('grass', 500, 4000, 200, 50, self.ground_level,
+                        init_entity, physics_active=True, walkable=True, pawn=False)
 
         self.character_entity_id = self.init_model('character1.1', 400, 300, 100, 100,
-                                                   self.ground_level, init_entity, physics_active=True)
+                                                   self.ground_level, init_entity, physics_active=True, pawn=True)
 
-        self.init_model('tree1', 700, 500, 700, 900, 6.0, init_entity)
+        self.init_model('tree1', 700, 400, 700, 900, 6.0, init_entity)
         self.init_model('tree1', 2000, 400, 700, 900, 7.0, init_entity)
 
     def generate_mice(self, dt):
@@ -157,14 +158,17 @@ class PopielGame(Widget, InitMixin):
             else:
                 best_instructions = self.best_result['instructions']
                 print("Picking this one:", self.best_result['result'])
-            entity_id = self.init_model_mouse('mouse1_l', 1900, 400, 200, 50, self.ground_level,
+            entity_id = self.init_model_mouse('mouse1_l', 1090, 400, 200, 50, self.ground_level,
                                         best_instructions,
                                         self.gameworld.init_entity)
-            # Count down the time to remove mouse entity.
-            Clock.schedule_once(partial(self.remove_mouse, entity_id), MOUSE_LIFESPAN)
 
+            self.timed_remove_mouse(entity_id)
             self.mice_num += 1
             print("----------------", self.mice_num)
+
+    def timed_remove_mouse(self, entity_id, lifespan=MOUSE_LIFESPAN):
+        # Count down the time to remove mouse entity.
+        Clock.schedule_once(partial(self.remove_mouse, entity_id), lifespan)
 
     def remove_mouse(self, entity_id, dt):
         self.mice_num -= 1
