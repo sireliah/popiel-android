@@ -1,6 +1,7 @@
 # Popiel for Android
 Conceptual game featuring simple genetic algorithm for enemy behaviour.
 Background for the game is the Slavic legend of the Popiel that was consumed by mice.
+![popiel1](https://user-images.githubusercontent.com/17201781/38773688-4168227a-4053-11e8-8c2b-91f351bebfa5.png)
 # How to install?
 First install requirements.
 ```
