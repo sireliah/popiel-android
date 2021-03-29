@@ -7,6 +7,6 @@ KivEnt-Core==2.2.0.dev0
 Kivy==1.10.0
 Kivy-Garden==0.1.4
 pygame==1.9.3
-Pygments==2.2.0
+Pygments==2.7.4
 requests==2.12.4
 urllib3==1.22
